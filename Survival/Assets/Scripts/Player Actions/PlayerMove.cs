@@ -8,45 +8,51 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]                       private float MaxDistance;
     [Header("Vertical"), SerializeField]   private float verticalSpeed;
     [Header("Horizontal"), SerializeField] private float horizontalSpeed;
-    [SerializeField] private float acceleration;
-    [SerializeField] private float maxAcceleration;
-
-    private CharacterController controller;
-    private const float gravity = -9.81f;
-    private Vector3 velocity;
-    private float shift;
+    [SerializeField]                       private float jumpForce;
+    [SerializeField]                       private float acceleration;
+    [SerializeField]                       private float maxAcceleration;
+    private Rigidbody rigidbody;
+    [SerializeField] private Vector3 velocity;
+    [SerializeField] private float shift;
 #pragma warning restore 0649
 
     // Start is called before the first frame update
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         MovePlayer();
     }
 
     private void MovePlayer()
     {
-        float vMove = Input.GetAxis("Vertical");
-        float hMove = Input.GetAxis("Horizontal");
-
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (IsGrounded())
         {
-            shift += acceleration;
-        }
-        else if(shift > 0f)
-        {
-            shift -= Mathf.Pow(acceleration, 2f);
-        }
-        shift = Mathf.Clamp(shift, 0f, maxAcceleration);
+            float vMove = Input.GetAxis("Vertical");
+            float hMove = Input.GetAxis("Horizontal");
 
-        Vector3 verticalMove = transform.forward * vMove * verticalSpeed * Time.deltaTime * Mathf.Max(1f, shift);
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                shift += acceleration;
+            }
+            else if (shift > 0f)
+            {
+                shift -= Mathf.Pow(acceleration, 2f);
+            }
+            shift = Mathf.Clamp(shift, 0f, maxAcceleration);
 
-        controller.Move(verticalMove);
+            Vector3 verticalMove = transform.forward * vMove * verticalSpeed * Time.fixedDeltaTime * Mathf.Max(1f, shift);
+            Vector3 horizontalMove = transform.right * hMove * horizontalSpeed * Time.fixedDeltaTime;
+            rigidbody.MovePosition(transform.position + ((verticalMove + horizontalMove) * 0.25f));
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rigidbody.AddForce(0f, jumpForce, 0f, ForceMode.Acceleration);
+            }
+        }
     }
 
     //private void MovePlayer()
