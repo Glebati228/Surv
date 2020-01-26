@@ -1,21 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using System.Linq;
 
+//singleton
 public class ItemDB : MonoBehaviour
 {
 #pragma warning disable 0649
-    [SerializeField] private List<Item> items;
-    public List<Item> Items 
+    [SerializeField] private List<Item> items = new List<Item>();
+    public List<Item> Items
     {
-        get
-        {
-            if (items == null)
-                items = new List<Item>();
-
-            return items;
-        }
+        get { return items; }
     }
 
     public static ItemDB instance;
@@ -29,18 +24,67 @@ public class ItemDB : MonoBehaviour
             Destroy(gameObject);
     }
 
-    [System.Serializable]
-    public class Item
+    public bool CreateItem(bool canStack, string description)
     {
-        public int id;
-        public string description;
-        public Sprite image;
 
-        public Item(int id, string description, Sprite image)
-        {
-            this.id = id;
-            this.description = description;
-            this.image = image;
-        }
+        Item newItem = new Item(canStack, items.Count, description);
+        items.Add(newItem);
+
+        return true;
+    }
+
+    public bool DeleteItem(int id)
+    {
+        if (id < 0)
+            return false;
+
+        return items.Remove(items.FirstOrDefault(item => item.Id == id));
+        //items.RemoveAll(item => item.Id == id);
+    }
+
+    public IClonable GetItem(int id)
+    {
+        if (id < 0)
+            return null;
+
+        return items[id].Clone();
+    }
+}
+
+public interface IClonable
+{
+    IClonable Clone();
+}
+
+[System.Serializable]
+public class Item : IClonable
+{
+    public bool Stackable { get; set; }
+    public int Id { get; set; }
+    public string description { get; set; }
+
+    public Item(bool canStack, int id, string description)
+    {
+        this.Stackable = canStack;
+        this.Id = id;
+        this.description = description;
+    }
+
+    public IClonable Clone()
+    {
+        return new Item(Stackable, Id, description);
+    }
+}
+
+[System.Serializable]
+public class Slot
+{
+    public Item item { get; set; }
+    public int count { get; set; }
+
+    public Slot(Item item, int count)
+    {
+        this.item = item;
+        this.count = count;
     }
 }

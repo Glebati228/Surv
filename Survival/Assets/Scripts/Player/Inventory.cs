@@ -1,70 +1,118 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Inventory : MonoBehaviour
 {
 #pragma warning disable 0649
-    [SerializeField]
-    private InventoryObject inventory;
-    public InventoryObject Inv
+    private Slot[] inventory;
+    public Slot[] Inv
     {
         get { return inventory; }
-        set { inventory = value; }
     }
 
-    [SerializeField] private GameObject emptySlot;
-    [SerializeField] private RectTransform rect;
-    [SerializeField] private int columnCount;
-    [SerializeField] private int xOffset;
-    [SerializeField] private int yOffset;
-    private List<ItemSlot> emptySlots = new List<ItemSlot>();
-
+    [SerializeField]
+    private int capacity;
+    public int Capacity
+    {
+        get { return (capacity < 0) ? capacity = 0 : capacity; }
+    }
 #pragma warning restore 0649
 
-    // Start is called before the first frame update
     void Start()
     {
-        Inv.Init();
-        Init();
-    }
-
-    public void Init()
-    {
-        for (int i = 0; i < Inv.CAPACITY; i++)
+        inventory = new Slot[capacity];
+        for (int i = 0; i < capacity; i++)
         {
-            GameObject obj = Instantiate(emptySlot, this.rect) as GameObject;
-
-            RectTransform rect = obj.GetComponent<RectTransform>();
-
-            rect.localPosition = new Vector3()
-            {
-                x = 40 + (i % columnCount) * xOffset,
-                y = -40 + (-(i / columnCount) * yOffset),
-                z = 0f
-            };
-            rect.localScale = Vector3.one;
-
-            rect.name = i.ToString();
-
-            ItemSlot invItem = new ItemSlot();
-            invItem.id = i;
-            invItem.obj = obj;
-
-            emptySlots.Add(invItem);
+            inventory[i] = new Slot(null, 0);
         }
+
+        ItemDB.instance.CreateItem(true, "rock");
+        ItemDB.instance.CreateItem(false, "grass");
+        ItemDB.instance.CreateItem(true, "stick");
+
+        AddItem(0);
+        AddItem(0);
+
+        AddItem(1);
+        AddItem(1);
+
+        AddItem(50);
+
+        DebugConsoleWrite();
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool AddItem(int id)
     {
-        
+        if (id < 0 || id >= ItemDB.instance.Items.Count)
+            return false;
+
+        Item item = ItemDB.instance.GetItem(id) as Item;
+        if (item is null)
+            return false;
+
+        foreach (var slot in inventory)
+        {
+            if (slot.item == null)
+            {
+                slot.item = item;
+                slot.count = 1;
+                return true;
+            }
+            else if (slot.item.Id == item.Id && item.Stackable)
+            {
+                slot.count++;
+                return true;
+            }
+            //Debug.Log($"slot.item hash: {slot.item.GetHashCode()}   item hash: {item.GetHashCode()}");
+        }
+        return false;
     }
 
-    [System.Serializable]
-    public struct ItemSlot
+    public bool AddItem(Item item)
     {
-        public GameObject obj;
-        public int id;
+        if (item is null)
+            return false;
+
+        foreach (var slot in inventory)
+        {
+            if (slot.item == null)
+            {
+                slot.item = item;
+                slot.count = 1;
+                return true;
+            }
+            else if (slot.item == item && slot.item.Stackable)
+            {
+                slot.count++;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool DropItem(int slotID)
+    {
+        if (slotID < 0 || slotID >= inventory.Length)
+            return false;
+
+        if(slotID < inventory.Length)
+        {
+            inventory[slotID].item = null;
+            inventory[slotID].count = 0;
+        }
+
+        return true;
+    }
+
+    public void DebugConsoleWrite()
+    {
+        foreach (var item in inventory)
+        {
+            Debug.Log((item.item == null) ? "none" : item.item.description + " " + item.count);
+        }
     }
 }

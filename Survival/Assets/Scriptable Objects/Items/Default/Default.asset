@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a35c3ad96b969244b504100f6d4c5e6, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6961724227658925148, guid: 7e32ec091d21c444abb02daf1dcdad9b, type: 3}
+  id: 0
+  prefab: {fileID: 9153079602178710554, guid: 4fb50f01d9bf6c64ca666860a2ab4293, type: 3}
   type: 0
   description: Rock and roll

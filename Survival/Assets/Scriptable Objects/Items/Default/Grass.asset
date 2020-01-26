@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a35c3ad96b969244b504100f6d4c5e6, type: 3}
   m_Name: Grass
   m_EditorClassIdentifier: 
-  prefab: {fileID: 260783505129690358, guid: da20bec3baa41cb42853e6e419ced3b1, type: 3}
+  id: 1
+  prefab: {fileID: 9153079602178710554, guid: 4fb50f01d9bf6c64ca666860a2ab4293, type: 3}
   type: 0
   description: Some description
