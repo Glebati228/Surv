@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe8e6ec3a030dff4fb89431bb9bd18e4, type: 3}
+  m_Name: Food
+  m_EditorClassIdentifier: 
+  id: 2
+  prefab: {fileID: 9153079602178710554, guid: 4fb50f01d9bf6c64ca666860a2ab4293, type: 3}
+  type: 1
+  description: sdfdssssssssssssssssssssssss
+  healthRestore: 1.93
