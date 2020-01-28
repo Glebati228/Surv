@@ -103,7 +103,6 @@ public class DayCycle : MonoBehaviour
         float dayAngle = dayCount / 365f;
 
         sunTransform.localRotation = Quaternion.Euler(new Vector3(angle, 20f + 25f * dayAngle, 0f));
-        
 
         intensity = Vector3.Dot(sunTransform.up, Vector3.down);
         intensity = Mathf.Clamp01(intensity);

@@ -942,7 +942,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04b46db55c1595048a23c64b9c9cc0f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items: []
+  items:
+  - Id: 0
+    description: rock
+    image: {fileID: 21300000, guid: 629c416a29238e54eac858e9d7754bb3, type: 3}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+  - Id: 1
+    description: grass
+    image: {fileID: 21300000, guid: e650229fcdddebe4791be5c7365d19f9, type: 3}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+  - Id: 2
+    description: stick
+    image: {fileID: 21300000, guid: 24b6b5664d7d6834f910fcce2e79e3f6, type: 3}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+  - Id: 3
+    description: wood
+    image: {fileID: 21300000, guid: 24b6b5664d7d6834f910fcce2e79e3f6, type: 3}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+  stackleItems:
+  - Id: 0
+    description: bread
+    image: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+    stackSize: 4
+  - Id: 1
+    description: bottle
+    image: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    prefab: {fileID: 3281504430936107269, guid: 3c3b0ce8dd042184ea896deee639d524,
+      type: 3}
+    stackSize: 3
 --- !u!4 &301954868
 Transform:
   m_ObjectHideFlags: 0
@@ -5126,6 +5159,7 @@ GameObject:
   - component: {fileID: 1812994578}
   - component: {fileID: 1812994581}
   - component: {fileID: 1812994582}
+  - component: {fileID: 1812994583}
   m_Layer: 8
   m_Name: PLAYER
   m_TagString: Untagged
@@ -5250,7 +5284,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3908b9bba4dbd24187b826d0144b8d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  capacity: 5
+  capacity: 15
+--- !u!114 &1812994583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812994576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a89ea49e05aabc4188ce63a3ae35790, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryPanel: {fileID: 117270803}
+  slotPrefab: {fileID: 260783505129690358, guid: da20bec3baa41cb42853e6e419ced3b1,
+    type: 3}
+  emptyImage: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &1884236388
 GameObject:
   m_ObjectHideFlags: 0
