@@ -34,47 +34,48 @@ public class ItemDB : MonoBehaviour
             instance = this;
         else if (instance == this)
             Destroy(gameObject);
+
+        Load();
     }
 
-    void Start()
+    public void Load()
     {
-        //ItemDB.instance.CreateItem("rock", image);
-        //ItemDB.instance.CreateStackleItem(5, "grass", image);
-        //ItemDB.instance.CreateStackleItem(2, "stick", image);
-        //items.AddRange(stackleItems);
+        Debug.Log("Loading resources");
         for (int i = 0; i < stackleItems.Count; ++i)
         {
-            CreateStackleItem(stackleItems[i].StackSize, stackleItems[i].description, stackleItems[i].image, stackleItems[i].prefab, i);
+            CreateStackleItem(stackleItems[i].StackSize, stackleItems[i].description, i, stackleItems[i].name);
         }
+
+        items.ForEach(item => item.LoadResources());
     }
 
-    public bool CreateItem(string description, Sprite image, GameObject prefab)
+    public bool CreateItem(string description, string name)
     {
 
-        Item newItem = new Item(items.Count, description, image, prefab);
+        Item newItem = new Item(name, items.Count, description);
         items.Add(newItem);
 
         return true;
     }
 
-    public bool CreateStackleItem(int size, string description, Sprite image, GameObject prefab)
+    public bool CreateStackleItem(int size, string name, string description)
     {
         if (size == 1 || size == 0)
         {
-            return CreateItem(description, image, prefab);
+            return CreateItem(description, name);
         }
-        StackleItem item = new StackleItem(size, StackleItems.Count + 1000, description, image, prefab);
+        StackleItem item = new StackleItem(size, name, StackleItems.Count + 1000, description);
         items.Add(item);
         return true;
     }
 
-    public bool CreateStackleItem(int size, string description, Sprite image, GameObject prefab, int id)
+    public bool CreateStackleItem(int size, string description, int i, string name)
     {
         if (size == 1 || size == 0)
         {
-            return CreateItem(description, image, prefab);
+            return CreateItem(description, name);
         }
-        StackleItem item = new StackleItem(size, id + 1000, description, image, prefab);
+        StackleItem item = new StackleItem(size, name, 1000 + i, description);
         items.Add(item);
         return true;
     }
@@ -90,10 +91,18 @@ public class ItemDB : MonoBehaviour
 
     public IClonable GetItem(int index)
     {
-        if (index < 0)
+        if (index < 0 || index >= items.Count)
             return null;
 
         return items[index].Clone();
+    }
+
+    public IClonable GetItemById(int id)
+    {
+        if (id < 0)
+            return null;
+
+        return items.Find(item => item.Id == id).Clone();
     }
 }
 
@@ -110,26 +119,37 @@ public interface IStackable
 [System.Serializable]
 public class Item : IClonable
 {
+    public string name;
     public int Id;
     public string description;
     public Sprite image;
     public GameObject prefab;
 
-    public Item(int id, string description)
+    public Item(string name, int id, string description)
     {
+        this.name = name;
         this.Id = id;
         this.description = description;
     }
 
-    public Item(int id, string description, Sprite image, GameObject prefab) : this(id, description)
+    public void LoadResources()
     {
-        this.image = image;
+        //Texture2D img = Resources.Load<Texture2D>("Sprites/" + name);
+        //Sprite imgSprite = Sprite.Create(img, new Rect(0, 0, img.width, img.height), Vector2.zero);
+        this.image = Resources.Load<Sprite>("Sprites/" + name);
+
+        this.prefab = Resources.Load<GameObject>("Items/" + name);
+    }
+
+    public Item(string name, int id, string description, Sprite sprite, GameObject prefab) : this(name, id, description)
+    {
+        this.image = sprite;
         this.prefab = prefab;
     }
 
     public virtual IClonable Clone()
     {
-        return new Item(Id, description, image, prefab);
+        return new Item(name, Id, description, image, prefab);
     }
 }
 
@@ -142,14 +162,19 @@ public class StackleItem : Item, IStackable
         get { return stackSize; }
     }
 
-    public StackleItem(int StackSize, int id, string description, Sprite image, GameObject prefab) : base(id, description, image, prefab)
+    public StackleItem(int StackSize, string name, int id, string description) : base(name, id, description)
+    {
+        this.stackSize = StackSize;
+    }
+
+    public StackleItem(int StackSze, string name, int id, string description, Sprite sprite, GameObject prefab) : base(name, id, description, sprite, prefab)
     {
         this.stackSize = StackSize;
     }
 
     public override IClonable Clone()
     {
-        return new StackleItem(StackSize, Id, description, image, prefab);
+        return new StackleItem(StackSize, name, Id, description, image, prefab);
     }
 }
 

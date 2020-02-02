@@ -9,7 +9,7 @@ public class Inventory : MonoBehaviour
 {
 #pragma warning disable 0649
 
-    private Slot[] inventory;
+    [SerializeField] private Slot[] inventory;
     public Slot[] Inv
     {
         get { return inventory; }
@@ -35,11 +35,6 @@ public class Inventory : MonoBehaviour
         {
             inventory[i] = new Slot(null, 0);
         }
-        AddItem(4, 2);
-        AddItem(5, 2);
-        AddItem(4, 6);
-        AddItem(5, 3);
-        DebugConsoleWrite();
     }
 
     public bool AddItem(int id, int count = 0)
