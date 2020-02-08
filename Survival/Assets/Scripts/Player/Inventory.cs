@@ -33,18 +33,18 @@ public class Inventory : MonoBehaviour
         inventory = new Slot[capacity];
         for (int i = 0; i < capacity; i++)
         {
-            inventory[i] = new Slot(null, 0);
+            inventory[i] = new Slot(null, 0, null);
         }
     }
 
     public bool AddItem(int id, int count = 0)
     {
-        if (id < 0 || id >= ItemDB.instance.Items.Count)
+        if (id < 0)
             return false;
 
         count = Mathf.Max(0, count);
 
-        Item item = ItemDB.instance.GetItem(id) as Item;
+        Item item = ItemDB.instance.GetItemById(id) as Item;
         if (item is null)
             return false;
 
@@ -122,7 +122,7 @@ public class Inventory : MonoBehaviour
                     if (count > sItem.StackSize)
                     {
                         slot.count = sItem.StackSize;
-                        AddItem(sItem.Id, count - sItem.StackSize);
+                        AddItem(sItem, count - sItem.StackSize);
                         return false;
                     }
                     else if (count <= sItem.StackSize)
@@ -138,7 +138,7 @@ public class Inventory : MonoBehaviour
 
                     if (temp > sItem.StackSize)
                     {
-                        AddItem(sItem.Id, temp - sItem.StackSize);
+                        AddItem(sItem, temp - sItem.StackSize);
                         return false;
                     }
 

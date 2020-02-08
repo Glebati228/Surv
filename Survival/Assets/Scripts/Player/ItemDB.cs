@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 //singleton
 public class ItemDB : MonoBehaviour
@@ -75,8 +76,13 @@ public class ItemDB : MonoBehaviour
         {
             return CreateItem(description, name);
         }
+
         StackleItem item = new StackleItem(size, name, 1000 + i, description);
+        stackleItems[i] = item;
         items.Add(item);
+
+        Debug.Log((items[items.Count - 1] as StackleItem).StackSize);
+
         return true;
     }
 
@@ -167,14 +173,14 @@ public class StackleItem : Item, IStackable
         this.stackSize = StackSize;
     }
 
-    public StackleItem(int StackSze, string name, int id, string description, Sprite sprite, GameObject prefab) : base(name, id, description, sprite, prefab)
+    public StackleItem(int size, string name, int id, string description, Sprite sprite, GameObject prefab) : base(name, id, description, sprite, prefab)
     {
-        this.stackSize = StackSize;
+        this.stackSize = size;
     }
 
     public override IClonable Clone()
     {
-        return new StackleItem(StackSize, name, Id, description, image, prefab);
+        return new StackleItem(this.stackSize, name, Id, description, image, prefab);
     }
 }
 
@@ -183,10 +189,12 @@ public class Slot
 {
     public Item item;
     public int count;
+    public GameObject slotPrefab;
 
-    public Slot(Item item, int count)
+    public Slot(Item item, int count, GameObject slotPrefab)
     {
         this.item = item;
         this.count = count;
+        this.slotPrefab = slotPrefab;
     }
 }

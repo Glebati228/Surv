@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 
 public class InventoryGUI : MonoBehaviour
-{
+{ 
 #pragma warning disable 0649
     [SerializeField]
     private GameObject inventoryPanel;
@@ -32,7 +34,6 @@ public class InventoryGUI : MonoBehaviour
 
     private RectTransform rectTransform;
     private Inventory inventory;
-    private GameObject[] slotPrefabs;
 
     private Ray ray;
     private RaycastHit hit;
@@ -46,19 +47,19 @@ public class InventoryGUI : MonoBehaviour
         inventory = GetComponent<Inventory>();
         inventory.Init();
         rectTransform = inventoryPanel.GetComponent<RectTransform>();
-        slotPrefabs = new GameObject[inventory.Inv.Length];
 
         for (int i = 0; i < inventory.Inv.Length; ++i)
         {
-            slotPrefabs[i] = Instantiate(slotPrefab, rectTransform) as GameObject;
-            slotPrefabs[i].GetComponent<RectTransform>().localPosition = Vector3.zero;
-            slotPrefabs[i].GetComponentInChildren<TextMeshProUGUI>().text = (inventory.Inv[i].count == 1 || inventory.Inv[i].count == 0) ? "" : inventory.Inv[i].count.ToString("n0");
-            slotPrefabs[i].GetComponent<Image>().sprite = (inventory.Inv[i].item == null) ? emptyImage : inventory.Inv[i].item.image;
+            inventory.Inv[i].slotPrefab = Instantiate(slotPrefab, rectTransform) as GameObject;
+            RectTransform rectTransform1 = inventory.Inv[i].slotPrefab.GetComponent<RectTransform>();
+            rectTransform1.localPosition = Vector3.zero;
+            inventory.Inv[i].slotPrefab.GetComponentInChildren<TextMeshProUGUI>().text = (inventory.Inv[i].count == 1 || inventory.Inv[i].count == 0) ? "" : inventory.Inv[i].count.ToString("n0");
+            inventory.Inv[i].slotPrefab.GetComponent<Image>().sprite = (inventory.Inv[i].item == null) ? emptyImage : inventory.Inv[i].item.image;
 
-            slotPrefabs[i].transform.localPosition = new Vector3()
+            rectTransform1.localPosition = new Vector3()
             {
                 x = ((i % rowsize) * cellOffset.x) + margin.x,
-                y = ((int)(i / rowsize) * cellOffset.y),
+                y = -((int)(i / rowsize) * cellOffset.y) + margin.y,
                 z = 0f,
             };
         }
@@ -68,25 +69,35 @@ public class InventoryGUI : MonoBehaviour
 
     private void RayCheck()
     {
-        ray = cam.ScreenPointToRay(Input.mousePosition);
+        ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
         if (Physics.Raycast(ray, out hit, maxRayCastDistance, layerMask.value))
         {
             takingText.SetActive(true);
-
-            if (Input.GetKeyDown(KeyCode.E))
+            DroppedItem states = hit.collider.GetComponent<DroppedItem>();
+            if (Input.GetAxis("Use") == 1)
             {
-                ObjectStates states = hit.collider.GetComponent<ObjectStates>();
-                if (inventory.AddItem(states.id, states.count))
-                {
-                    //inventory.DebugConsoleWrite();
-                    states.gameObject.SetActive(false);
-                    return;
-                }
+                inventory.AddItem(states.id, states.count);
+                Debug.Log("--------------------");
+                inventory.DebugConsoleWrite();
+                UpdateInventory();
+                states.gameObject.SetActive(false);
             }
         }
         else
         {
             takingText.SetActive(false);
+        }
+    }
+
+    private void UpdateInventory()
+    {
+        foreach (var item in inventory.Inv)
+        {
+            if(item.item != null)
+            {
+                item.slotPrefab.GetComponentInChildren<TextMeshProUGUI>().text = (item.count == 1 || item.count == 0) ? "" :item.count.ToString("n0");
+                item.slotPrefab.GetComponent<Image>().sprite = item.item.image;
+            }
         }
     }
 

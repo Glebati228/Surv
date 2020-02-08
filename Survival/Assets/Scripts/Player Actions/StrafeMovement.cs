@@ -33,7 +33,7 @@ public class StrafeMovement : MonoBehaviour
     float timer = 0f;
     int frameCount = 0;
 
-    Vector3 playerVelocity = Vector3.zero;
+    public Vector3 playerVelocity = Vector3.zero;
     Vector3 playerDirectionNormal = Vector3.zero;
     Vector3 playerDirection = Vector3.zero;
     float playerTopVelocity = 0f;
@@ -42,7 +42,9 @@ public class StrafeMovement : MonoBehaviour
 
     float playerFriction = 0f;
 
-    float mass;
+    public float mass;
+    [SerializeField] float massMult;
+
     public bool collisionStop = true;
 #pragma warning restore 0649
 
@@ -71,6 +73,7 @@ public class StrafeMovement : MonoBehaviour
         transform.rotation = spawnPoint.rotation;
 
         mass = (transform.localScale.x + transform.localScale.y + transform.localScale.z) * 0.333f;
+        mass *= massMult;
     }
 
     // Update is called once per frame
@@ -321,26 +324,36 @@ public class StrafeMovement : MonoBehaviour
     {
         Rigidbody rigidbody = hit.collider.attachedRigidbody;
 
+        Vector3 playerDir = playerVelocity.normalized;
+        float playerSpeed = playerVelocity.magnitude;
+        float playerMass = this.mass;
+
         if (rigidbody == null)
         {
             if (collisionStop)
             {
-                Vector3 temp = new Vector3(playerVelocity.x, 0f, playerVelocity.z).normalized;
-                Vector3 tempHit = new Vector3(hit.normal.x, 0f, hit.normal.z);
-                if (Vector3.Dot(temp, -tempHit) > 0f)
-                {
-                    playerVelocity.x = 0f;
-                    playerVelocity.z = 0f;
-                }
+                Vector3 hitDir = hit.normal;
+                float hitMass = playerMass;
+
+                Vector3 sumVelocity = ((playerMass * playerDir * playerSpeed)) / (playerMass + hitMass);
+                playerVelocity = (-playerSpeed * playerDir) + sumVelocity;
+                //playerVelocity = 0f + ;
             }
         }
         else if (!rigidbody.isKinematic)
         {
-            Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
+            //Vector3 pushDir = new Vector3(hit.moveDirection.x, hit.moveDirection.y, hit.moveDirection.z);
 
-            rigidbody.velocity = pushDir;
+            //rigidbody.velocity = pushDir;
 
-            playerVelocity -= pushDir * 2f;
+            //playerVelocity -= pushDir * 2f;
+            Vector3 hitDir = -playerDir;
+            float hitSpeed = rigidbody.velocity.magnitude;
+            float hitMass = rigidbody.mass;
+
+            Vector3 sumVelocity = ((playerMass * playerDir * playerSpeed) + (hitMass * hitDir * hitSpeed)) / (playerMass + hitMass);
+            rigidbody.velocity = (-hitSpeed * hitDir) + sumVelocity;
+            playerVelocity += (-playerSpeed * playerDir) + sumVelocity;
         }
     }
 }
